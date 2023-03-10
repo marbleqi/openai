@@ -1,20 +1,9 @@
 # 制作基础镜像
-FROM centos:7 AS base
-
-# 调整时区，升级软件包
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && yum install -y epel-release && yum -y update
+FROM node:18 AS base
 
 # 设置工作目录
 WORKDIR /data
 
-# 设置nodejs版本为16
-RUN curl --silent --location https://rpm.nodesource.com/setup_18.x | bash - \
-  # 安装nodejs
-  && yum install -y nodejs \
-  # 升级npm包
-  && npm i -g npm \
-  # 安装yarn包
-  && npm i -g yarn
 # 引入包文件
 COPY package.json .
 # 安装依赖包
