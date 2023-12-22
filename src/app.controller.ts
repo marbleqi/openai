@@ -1,11 +1,42 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, All, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { HttpService } from '@nestjs/axios';
+import { AxiosHeaders } from 'axios';
+import { firstValueFrom } from 'rxjs';
 
 @Controller()
 export class AppController {
-  constructor() {}
+  constructor(private readonly http: HttpService) {}
 
-  @Get()
-  getHello(): string {
-    return 'Hello World!';
+  @All('*')
+  async all(@Req() req: Request, @Res() res: Response) {
+    console.debug('method', req.method);
+    console.debug('url', req.url);
+    console.debug('params', req.params);
+    console.debug('query', req.query);
+    console.debug('body', req.body);
+    console.debug('headers', req.headers);
+    const headers: AxiosHeaders = new AxiosHeaders();
+    if (req.headers['Content-Type']) {
+      console.debug('Content-Type', req.headers['Content-Type']);
+      headers.set('Content-Type', req.headers['Content-Type']);
+    } else {
+      headers.set('Content-Type', 'application/json');
+    }
+    headers.set('Authorization', req.headers['Authorization']);
+    /**接口调用结果 */
+    const result = await firstValueFrom(
+      this.http.request({
+        url: `https://api.openai.com${req.url}`,
+        method: req.method,
+        params: req.params,
+        data: req.body,
+        headers,
+        validateStatus: () => true,
+      }),
+    );
+    console.debug('status', result.status);
+    console.debug('result', result.data);
+    res.status(result.status).json(result.data);
   }
 }
