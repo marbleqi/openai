@@ -17,13 +17,13 @@ export class AppController {
     console.debug('body', req.body);
     console.debug('headers', req.headers);
     const headers: AxiosHeaders = new AxiosHeaders();
-    if (req.headers['Content-Type']) {
-      console.debug('Content-Type', req.headers['Content-Type']);
-      headers.set('Content-Type', req.headers['Content-Type']);
+    if (req.headers['content-type']) {
+      console.debug('Content-Type', req.headers['content-type']);
+      headers.set('Content-Type', req.headers['content-type']);
     } else {
       headers.set('Content-Type', 'application/json');
     }
-    headers.set('Authorization', req.headers['Authorization']);
+    headers.set('Authorization', req.headers['authorization']);
     /**接口调用结果 */
     const result = await firstValueFrom(
       this.http.request({
